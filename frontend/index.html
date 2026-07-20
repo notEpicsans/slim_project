@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kusina — Filipino Cookbook</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Work+Sans:wght@400;500;600&display=swap');
+
+  :root {
+    --leaf: #2f3d2f;
+    --leaf-dark: #1c261c;
+    --annatto: #c0532a;
+    --annatto-light: #e07a48;
+    --rice: #f6f1e4;
+    --rice-dim: #eae2cc;
+    --ink: #24231f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--rice);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+  }
+
+  header {
+    background: var(--leaf);
+    color: var(--rice);
+    padding: 3rem 1.5rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(90deg, var(--annatto) 0 24px, var(--annatto-light) 24px 48px);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 5vw, 3.2rem);
+    margin: 0 0 .4rem;
+    letter-spacing: -0.01em;
+  }
+
+  header p {
+    margin: 0;
+    opacity: .8;
+    font-size: .95rem;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+  }
+
+  .toolbar {
+    max-width: 900px;
+    margin: -1.6rem auto 2rem;
+    padding: 0 1.5rem;
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .toolbar input, .toolbar select {
+    font-family: inherit;
+    font-size: .95rem;
+    padding: .75rem 1rem;
+    border: 1px solid var(--rice-dim);
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(28,38,28,.12);
+  }
+
+  .toolbar input { flex: 1 1 240px; }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem 4rem;
+  }
+
+  #status {
+    text-align: center;
+    color: #7a7566;
+    font-size: .9rem;
+    margin-bottom: 1rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.2rem;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.4rem;
+    box-shadow: 0 8px 24px rgba(28,38,28,.08);
+    border-left: 5px solid var(--annatto);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(28,38,28,.14);
+  }
+
+  .card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 1.3rem;
+    margin: 0 0 .3rem;
+  }
+
+  .tag-row {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+    margin-bottom: .6rem;
+  }
+
+  .tag {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    background: var(--rice-dim);
+    color: var(--leaf-dark);
+    padding: .2rem .6rem;
+    border-radius: 999px;
+  }
+
+  .card p.excerpt {
+    font-size: .88rem;
+    color: #5c584c;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Modal */
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(24,29,20,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    z-index: 10;
+  }
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--rice);
+    max-width: 560px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 2rem;
+    position: relative;
+  }
+
+  .modal h2 {
+    font-family: 'Fraunces', serif;
+    margin-top: 0;
+  }
+
+  .modal .close {
+    position: absolute;
+    top: 1rem; right: 1.2rem;
+    border: none;
+    background: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--leaf-dark);
+  }
+
+  .modal ul {
+    padding-left: 1.1rem;
+    margin: .6rem 0 1.2rem;
+  }
+
+  .modal h4 {
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-size: .78rem;
+    color: var(--annatto);
+    margin-bottom: .3rem;
+  }
+
+  footer {
+    text-align: center;
+    font-size: .8rem;
+    color: #948f7e;
+    padding-bottom: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Kusina: Paradise of Majimbo</h1>
+  <p>A Filipino Cookbook, lamon now, bloated later!</p>
+</header>
+
+<div class="toolbar">
+  <input type="text" id="searchBox" placeholder="Search for a dish (e.g. adobo)…">
+  <select id="categoryFilter">
+    <option value="">All categories</option>
+  </select>
+</div>
+
+<main>
+  <div id="status">Loading recipes…</div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>Filipino Cookbook API</footer>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <button class="close" id="closeModal">&times;</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  // NOTE: This is a local demo client. In production, never embed a static
+  // API token in client-side JavaScript — proxy the request through a
+  // trusted backend instead.
+  const API_BASE = new URL('../api', window.location.href).toString().replace(/\/$/, '');
+  const TOKEN = 'dmmmsu-cookbook-token-2026';
+
+  const grid = document.getElementById('grid');
+  const status = document.getElementById('status');
+  const searchBox = document.getElementById('searchBox');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const overlay = document.getElementById('overlay');
+  const modalBody = document.getElementById('modalBody');
+
+  async function apiGet(path) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      headers: { 'Authorization': `Bearer ${TOKEN}` },
+      mode: 'cors'
+    });
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    return res.json();
+  }
+
+  function renderFoods(foods) {
+    grid.innerHTML = '';
+    if (!foods.length) {
+      status.textContent = 'No dishes found.';
+      return;
+    }
+    status.textContent = `${foods.length} dish${foods.length === 1 ? '' : 'es'}`;
+    foods.forEach(food => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <h3>${food.food_name}</h3>
+        <div class="tag-row">
+          <span class="tag">${food.category_name}</span>
+          <span class="tag">${food.origin_name}</span>
+        </div>
+        <p class="excerpt">${food.instructions.slice(0, 90)}${food.instructions.length > 90 ? '…' : ''}</p>
+      `;
+      card.addEventListener('click', () => openModal(food));
+      grid.appendChild(card);
+    });
+  }
+
+  function openModal(food) {
+    modalBody.innerHTML = `
+      <h2>${food.food_name}</h2>
+      <div class="tag-row">
+        <span class="tag">${food.category_name}</span>
+        <span class="tag">${food.origin_name}</span>
+      </div>
+      <h4>Ingredients</h4>
+      <ul>${food.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+      <h4>Instructions</h4>
+      <p>${food.instructions}</p>
+    `;
+    overlay.classList.add('open');
+  }
+
+  document.getElementById('closeModal').addEventListener('click', () => overlay.classList.remove('open'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('open'); });
+
+  async function loadCategories() {
+    try {
+      const categories = await apiGet('/categories');
+      categories.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.category_name;
+        opt.textContent = c.category_name;
+        categoryFilter.appendChild(opt);
+      });
+    } catch (e) { /* non-fatal */ }
+  }
+
+  let allFoods = [];
+
+  async function loadFoods() {
+    try {
+      allFoods = await apiGet('/foods');
+      renderFoods(allFoods);
+    } catch (e) {
+      status.textContent = 'Could not reach the API. Is XAMPP running and the token correct?';
+    }
+  }
+
+  function applyFilters() {
+    const term = searchBox.value.trim().toLowerCase();
+    const cat = categoryFilter.value;
+    const filtered = allFoods.filter(f =>
+      (!term || f.food_name.toLowerCase().includes(term)) &&
+      (!cat || f.category_name === cat)
+    );
+    renderFoods(filtered);
+  }
+
+  searchBox.addEventListener('input', applyFilters);
+  categoryFilter.addEventListener('change', applyFilters);
+
+  loadCategories();
+  loadFoods();
+</script>
+
+</body>
+</html>
